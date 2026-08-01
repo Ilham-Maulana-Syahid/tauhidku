@@ -36,6 +36,7 @@
 
   const MAX_DALIL = 8;       // maksimal hadits yang dipakai sebagai konteks (tampilkan semua dalil terkait)
   const MAX_KITAB = 8;       // maksimal kitab yang dipindai untuk mencari dalil
+  const MAX_PER_KITAB = 3;   // maksimal dalil yang diambil dari satu kitab (agar hasil bervariasi)
   const history = [];        // riwayat percakapan (role, text)
 
   /* ---------- Escaping ---------- */
@@ -105,13 +106,184 @@
     }
   }
 
-  /* ---------- Cari dalil relevan di database ---------- */
+  /* ---------- Cari dalil relevan di database ----------
+     Hanya hadits yang benar-benar sesuai dengan konteks pertanyaan yang
+     ditampilkan:
+     1. Kata kunci diambil hanya dari kata PENTING pertanyaan (kata tugas
+        seperti "bagaimana", "cara", "yang" dibuang agar tidak menarik
+        hadits yang tidak berkaitan).
+     2. Ejaan diseragamkan (sholat→shalat) dan bentuk kata dasar dicari
+        (bertaubat→taubat) agar kecocokan lebih akurat.
+     3. Setiap hadits diberi SKOR = jumlah kata kunci yang cocok; hanya
+        hadits dengan skor > 0 yang diambil, diurutkan dari yang paling
+        relevan, dengan maksimal 3 hadits per kitab supaya hasil bervariasi.
+  ---------------------------------------------------------------- */
+
+  // Kata-kata umum yang tidak dijadikan kata kunci (bukan topik pertanyaan)
+  const STOP_WORDS = new Set([
+    // kata tanya
+    "apa", "apakah", "bagaimana", "berapa", "kenapa", "mengapa", "kapan",
+    "dimana", "kemana", "siapa", "adakah", "bolehkah", "bisakah", "kah",
+    // kata sambung & kata depan
+    "yang", "untuk", "dengan", "dari", "pada", "ke", "di", "dalam",
+    "tentang", "seperti", "karena", "agar", "supaya", "sehingga", "maka",
+    "atau", "dan", "tetapi", "tapi", "namun", "sedangkan", "sementara",
+    "terhadap", "kepada", "oleh", "bagi", "serta", "melalui", "antara",
+    "sampai", "hingga", "tanpa", "sesuai", "menurut",
+    // kata bantu
+    "adalah", "merupakan", "yaitu", "yakni", "harus", "bisa", "dapat",
+    "boleh", "ingin", "mau", "akan", "sudah", "telah", "sedang", "masih",
+    "jangan", "tidak", "bukan", "perlu", "sebaiknya", "seharusnya", "mungkin",
+    // kata ganti
+    "saya", "aku", "kamu", "anda", "kami", "kita", "mereka", "dia", "ia",
+    "engkau", "beliau", "ini", "itu", "tersebut",
+    // kata kerja/umum yang tidak spesifik
+    "tolong", "mohon", "minta", "jelaskan", "berikan", "sebutkan",
+    "ceritakan", "tuliskan", "uraikan", "bantu", "jawab", "tanya",
+    "bertanya", "pertanyaan", "cara", "benar", "betul", "salah", "hal",
+    "masalah", "misal", "misalnya", "contoh", "contohnya", "macam", "jenis",
+    "bagian", "seputar", "mengenai", "perihal", "sangat", "sekali", "saja",
+    "pun", "juga", "lagi", "pula", "baru", "tadi", "kemarin", "besok",
+    "sekarang", "nanti", "kata", "arti", "makna", "pengertian", "definisi",
+    // kata sambung syarat & waktu yang sering dipakai pembuka pertanyaan
+    "jika", "kalau", "apabila", "atas", "bawah", "setelah", "sesudah",
+    "selama", "sebelum", "sebagai", "ketika", "saat", "waktu", "bila",
+    "bilamana", "terlebih",
+  ]);
+
+  // Ejaan yang diseragamkan agar kecocokan lebih baik
+  const SYNONYMS = {
+    sholat: "shalat",
+    solat: "shalat",
+    sembahyang: "shalat",
+  };
+
+  // Ambil kata kunci penting dari pertanyaan (stop words dibuang)
+  function extractKeywords(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    // Pertanyaan berbahasa Arab → pecah per kata, buang kata tanya & "ال"
+    if (/[\u0600-\u06FF]/.test(q)) {
+      const arStop = new Set([
+        "ما", "هل", "كيف", "لماذا", "متى", "اين", "من", "الى", "عن",
+        "في", "على", "الذي", "التي", "اذا", "كان", "ان", "لا", "لم",
+        "لن", "قد", "يا", "هذا", "هذه", "ذلك", "تلك", "بين", "عند",
+        "مع", "ثم", "او", "غير", "كل", "بعض", "الا", "اما",
+      ]);
+      const words = stripTashkeel(q) // harakat dibuang dulu agar cocok dgn arStop
+        .split(/\s+/)
+        .map((w) => w.replace(/^\u0627\u0644/, "")) // buang "ال" (alif-lam)
+        .filter((w) => w.length >= 3 && !arStop.has(w));
+      return Array.from(new Set(words)).slice(0, 6);
+    }
+    const words = q
+      .split(/[^a-z0-9']+/i)
+      .filter((w) => w.length >= 3)
+      .map((w) => SYNONYMS[w] || w)
+      .filter((w) => !STOP_WORDS.has(w));
+    return Array.from(new Set(words)).slice(0, 6);
+  }
+
+  // Bentuk kata dasar sederhana (mis. "bertaubat" → "taubat")
+  function stemWord(w) {
+    let s = w;
+    const suffixes = ["kan", "nya", "lah", "kah", "an", "i"];
+    for (const sfx of suffixes) {
+      if (s.length > sfx.length + 2 && s.endsWith(sfx)) {
+        s = s.slice(0, -sfx.length);
+        break;
+      }
+    }
+    const prefixes = ["meng", "men", "mem", "meny", "ber", "per", "ter", "pe", "pen", "peng", "di", "ke", "se"];
+    for (const pfx of prefixes) {
+      if (s.length > pfx.length + 2 && s.startsWith(pfx)) {
+        s = s.slice(pfx.length);
+        break;
+      }
+    }
+    return s;
+  }
+
+  // Variasi kata kunci untuk pencocokan: asli, sinonim, bentuk dasar,
+  // dan beberapa bentuk berimbuhan umum (mis. "shalatnya", "bertaubatlah")
+  function keywordVariants(w) {
+    const set = [w];
+    if (SYNONYMS[w]) set.push(SYNONYMS[w]);
+    const stem = stemWord(w);
+    if (stem !== w && stem.length >= 4) set.push(stem);
+    if (!/[\u0600-\u06FF]/.test(w)) {
+      const bases = [w, stem].filter((b) => b.length >= 4);
+      for (const base of bases) {
+        for (const sfx of ["nya", "lah", "kan"]) {
+          const v = base + sfx;
+          if (set.indexOf(v) === -1) set.push(v);
+        }
+      }
+    }
+    return set;
+  }
+
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  // Buang harakat Arab agar kata kunci "صلاة" cocok dengan "الصَّلَاةِ"
+  function stripTashkeel(s) {
+    return s.replace(/[\u064B-\u0652\u0670]/g, "");
+  }
+
+  // Cocokkan kata kunci pada teks. Teks Indonesia memakai BATAS KATA agar
+  // "tua" tidak menangkap "ketua"; teks Arab memakai substring (setelah
+  // harakat dibuang) karena huruf Arab sering bersambung. Apostrof
+  // dinormalkan dulu ("jama'ah" ≈ "jamaah") supaya ejaan yang mirip cocok.
+  function matchesKeyword(text, v) {
+    if (text == null) return false; // beberapa baris data tidak punya teks Arab
+    if (/[\u0600-\u06FF]/.test(v)) {
+      return stripTashkeel(text).indexOf(stripTashkeel(v)) !== -1;
+    }
+    const t = text.toLowerCase().replace(/[\u2019\u2018']/g, "");
+    const k = v.replace(/[\u2019\u2018']/g, "");
+    const re = new RegExp("(^|[^a-z0-9])" + escapeRegex(k) + "([^a-z0-9]|$)");
+    return re.test(t);
+  }
+
+  // Skor relevansi satu hadits: jumlah kata kunci yang cocok (terjemah/Arab).
+  // kwVariants = daftar varian per kata kunci yang sudah disiapkan sekali.
+  function scoreHadith(arab, terjemah, kwVariants) {
+    if (!kwVariants.length) return 0;
+    let score = 0;
+    for (const variants of kwVariants) {
+      for (const v of variants) {
+        if (matchesKeyword(terjemah, v) || matchesKeyword(arab, v)) {
+          score++;
+          break;
+        }
+      }
+    }
+    return score;
+  }
+
   async function findDalil(query) {
     const H = window.TauhidHadits;
     if (!H) return [];
     try {
       const manifest = await H.loadManifest();
       const kitabs = manifest.kitab.slice(0, MAX_KITAB);
+      const keywords = extractKeywords(query);
+      if (!keywords.length) return [];
+
+      // Variasi kata kunci disiapkan SEKALI untuk semua kitab (bukan per baris)
+      const kwVariants = keywords.map((kw) => keywordVariants(kw));
+      const allVariants = Array.from(new Set([].concat(...kwVariants)));
+      const hasArabic = allVariants.some((v) => /[\u0600-\u06FF]/.test(v));
+      // varian untuk pra-saring cepat, dinormalkan SAMA seperti di matchesKeyword:
+      // Arab tanpa harakat, Latin tanpa apostrof (agar "jama'ah"≈"jamaah")
+      const searchVariants = allVariants.map((v) =>
+        hasArabic && /[\u0600-\u06FF]/.test(v)
+          ? stripTashkeel(v)
+          : v.replace(/[\u2019\u2018']/g, "")
+      );
+
       const dalil = [];
       for (const k of kitabs) {
         if (dalil.length >= MAX_DALIL) break;
@@ -121,24 +293,36 @@
         } catch (e) {
           continue;
         }
-        // token kata kunci: ambil kata penting (>=3 huruf); jika pertanyaan
-        // berbahasa Arab (mis. "صلاة"), pakai kalimat utuh sebagai kueri.
-        let words = query
-          .toLowerCase()
-          .split(/[^a-z0-9]+/i)
-          .filter((w) => w.length >= 3)
-          .slice(0, 4);
-        if (!words.length) words = [query];
-        for (const w of words) {
-          const found = H.searchInKitab(rows, w, true);
-          for (const f of found) {
-            if (dalil.length >= MAX_DALIL) break;
-            dalil.push({ kitab: k.name, id: f.id, arab: f.arab, terjemah: f.terjemah });
+        // SATU pemindaian per kitab: cocokkan semua varian sekaligus, lalu
+        // skor hanya baris yang lolos pra-saring — jauh lebih cepat daripada
+        // memanggil pencarian terpisah untuk tiap varian.
+        const kitabBest = [];
+        for (let i = 0; i < rows.length; i++) {
+          const r = rows[i];
+          // teks dinormalkan SAMA seperti di matchesKeyword agar pra-saring
+          // tidak lebih ketat daripada penilaian (hindari hasil terlewat)
+          const t = (r[2] || "").toLowerCase().replace(/[\u2019\u2018']/g, "");
+          const a = hasArabic ? stripTashkeel(r[1] || "") : "";
+          let any = false;
+          for (let j = 0; j < searchVariants.length; j++) {
+            const sv = searchVariants[j];
+            if (t.indexOf(sv) !== -1 || (a && a.indexOf(sv) !== -1)) {
+              any = true;
+              break;
+            }
           }
-          if (dalil.length >= MAX_DALIL) break;
+          if (!any) continue;
+          const s = scoreHadith(r[1], r[2], kwVariants);
+          if (s > 0) {
+            kitabBest.push({ kitab: k.name, id: r[0], arab: r[1], terjemah: r[2], score: s });
+          }
         }
+        kitabBest.sort((a, b) => b.score - a.score || a.id - b.id);
+        // Ambil paling relevan dari tiap kitab agar hasil bervariasi
+        dalil.push(...kitabBest.slice(0, MAX_PER_KITAB));
       }
-      return dalil;
+      dalil.sort((a, b) => b.score - a.score || a.id - b.id);
+      return dalil.slice(0, MAX_DALIL).map(({ score, ...d }) => d);
     } catch (e) {
       return [];
     }
@@ -147,7 +331,8 @@
   /* ---------- Panggil Gemini API ---------- */
   async function callGemini(question, dalilText) {
     const ctx = dalilText
-      ? "\n\nDalil hadits yang relevan dari database (gunakan sebagai rujukan utama):\n" + dalilText
+      ? "\n\nKandidat dalil hadits dari database. Gunakan HANYA hadits yang benar-benar relevan dengan pertanyaan; " +
+        "abaikan hadits yang tidak sesuai dengan konteks:\n" + dalilText
       : "";
     const contents = history
       .slice(-8)
