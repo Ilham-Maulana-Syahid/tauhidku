@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tauhidku — Kembali kepada Al-Qur'an &amp; As-Sunnah</title>
+  <meta name="description" content="Tauhidku — media dakwah tauhid untuk membantu umat beragama secara lurus sesuai Al-Qur'an dan Hadits. Cari hadits, tanya ustadz, dan baca artikel." />
+  <meta name="theme-color" content="#0e4d38" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e4d38'/%3E%3Ctext x='16' y='23' font-family='serif' font-size='17' fill='%23e8c766' text-anchor='middle'%3E%F0%9F%95%8C%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Marcellus&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Ornamen geometris islami di latar -->
+  <div class="bg-pattern" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- ============ NAVBAR ============ -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner container">
+      <a href="#home" class="brand">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.6 0 1.1 0 1.6-.1-2-1.6-3.3-4-3.3-6.7 0-4.8 3.9-8.7 8.7-8.7.4 0 .8 0 1.2.1C19.3 4.4 15.9 2 12 2Z" fill="currentColor"/>
+        </svg>
+        <span class="brand-text">Tauhid<em>ku</em></span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Navigasi utama">
+        <a href="#home" class="nav-link">Beranda</a>
+        <a href="#harian" class="nav-link">Hadits Harian</a>
+        <a href="#hadits" class="nav-link">Cari Hadits</a>
+        <a href="#tanya" class="nav-link">Tanya Ustadz</a>
+        <a href="#artikel" class="nav-link">Artikel</a>
+        <a href="#tentang" class="nav-link">Tentang</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section id="home" class="hero">
+      <div class="hero-arch" aria-hidden="true">
+        <svg viewBox="0 0 200 120" preserveAspectRatio="none"><path d="M10 120 V50 C10 20 60 8 100 8 C140 8 190 20 190 50 V120 Z" fill="none" stroke="rgba(232,199,102,.35)" stroke-width="1.5"/></svg>
+      </div>
+      <div class="container hero-inner">
+        <p class="bismillah" data-reveal>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+        <h1 class="hero-title" data-reveal>Tauhid<em>ku</em></h1>
+        <p class="hero-sub" data-reveal>Kembali kepada <strong>Al-Qur'an</strong> dan <strong>As-Sunnah</strong> dengan pemahaman yang lurus.</p>
+        <p class="hero-desc" data-reveal>Tempat belajar aqidah, beribadah dengan benar, dan bertanya seputar agama — berlandaskan dalil, bukan sekadar opini.</p>
+
+        <div class="hero-stats" id="hero-stats" data-reveal></div>
+
+        <div class="hero-actions" data-reveal>
+          <a href="#hadits" class="btn btn-gold">📖 Cari Hadits</a>
+          <a href="#tanya" class="btn btn-outline">🕌 Tanya Ustadz</a>
+        </div>
+      </div>
+      <div class="hero-stars" aria-hidden="true">
+        <span class="star star-8">✦</span>
+        <span class="star star-4">✦</span>
+        <span class="star star-12">✦</span>
+        <span class="star star-6">✦</span>
+      </div>
+      <a href="#harian" class="scroll-hint" aria-label="Scroll ke bawah">⌄</a>
+    </section>
+
+    <!-- ============ HADITS HARIAN ============ -->
+    <section id="harian" class="section section-cream">
+      <div class="container">
+        <h2 class="section-title" data-reveal><span class="title-mark">❖</span> Hadits Harian</h2>
+        <p class="section-sub" data-reveal>Renungan hadits pilihan untuk hari ini — dari kitab-kitab shahih</p>
+
+        <div class="daily-card" id="daily-card" data-reveal>
+          <div class="daily-top">
+            <span class="daily-date" id="daily-date">—</span>
+            <button class="daily-btn" id="daily-btn" title="Tampilkan hadits lain">⟳ Hadits Lain</button>
+          </div>
+          <p class="daily-arab" id="daily-arab" dir="rtl" lang="ar">…</p>
+          <div class="daily-divider" aria-hidden="true"><span>❖</span></div>
+          <p class="daily-terjemah" id="daily-terjemah">Memuat hadits harian…</p>
+          <div class="daily-footer">
+            <span class="sumber" id="daily-sumber">—</span>
+            <span class="daily-loader" id="daily-loader">memuat…</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PENCARIAN HADITS ============ -->
+    <section id="hadits" class="section">
+      <div class="container">
+        <h2 class="section-title" data-reveal><span class="title-mark">❖</span> Pencarian Hadits</h2>
+        <p class="section-sub" data-reveal>Cari di <span id="search-total">±63.000</span> hadits terjemahan Indonesia dari 12 kitab</p>
+
+        <form class="search-form" id="search-form" data-reveal>
+          <div class="search-row">
+            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 21l-4.3-4.3M17 10.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <input id="search-input" type="search" placeholder="Cari kata kunci… mis. niat, puasa, shalat" autocomplete="off" />
+            <label class="arab-toggle" title="Sertakan teks Arab dalam pencarian">
+              <input type="checkbox" id="toggle-arab" />
+              <span>termasuk teks Arab</span>
+            </label>
+            <button type="submit" class="btn btn-gold">Cari</button>
+          </div>
+          <div class="kitab-filters" id="kitab-filters" aria-label="Filter kitab"></div>
+        </form>
+
+        <div class="search-progress hidden" id="search-progress">
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+          <p class="progress-text" id="progress-text"></p>
+        </div>
+
+        <p class="result-count hidden" id="result-count"></p>
+        <div class="search-results" id="search-results"></div>
+        <div class="search-empty hidden" id="search-empty">
+          <span class="empty-icon">🕊️</span>
+          <p>Belum ada pencarian. Ketik kata kunci di atas untuk mulai.</p>
+        </div>
+        <div class="load-more-wrap hidden" id="load-more-wrap">
+          <button class="btn btn-ghost" id="load-more">Muat lebih banyak</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TANYA USTADZ ============ -->
+    <section id="tanya" class="section section-cream">
+      <div class="container">
+        <h2 class="section-title" data-reveal><span class="title-mark">❖</span> Tanya Ustadz</h2>
+        <p class="section-sub" data-reveal>Tanyakan seputar agama — jawaban diambil dari <strong>Al-Qur'an &amp; Hadits</strong> yang ada di database kami</p>
+
+        <div class="chat-hint" id="chat-hint" data-reveal>
+          <span class="chat-hint-icon">ℹ️</span>
+          <span id="chat-hint-text">Memeriksa kunci AI…</span>
+        </div>
+
+        <div class="chat-window" data-reveal>
+          <div class="chat-box" id="chat-box" role="log" aria-live="polite"></div>
+          <div class="chat-suggest" id="chat-suggest"></div>
+          <form class="chat-form" id="chat-form" autocomplete="off">
+            <input id="chat-input" type="text" placeholder="Tulis pertanyaanmu… mis. 'Bagaimana cara bertaubat?'" autocomplete="off" />
+            <button type="submit" class="chat-send" id="chat-send" aria-label="Kirim">➤</button>
+          </form>
+        </div>
+
+        <p class="chat-disclaimer" data-reveal>
+          ⚠️ Jawaban disusun otomatis oleh AI dan dilengkapi dalil dari database hadits. Selalu verifikasi kepada ustadz/ulama untuk perkara penting.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ ARTIKEL ============ -->
+    <section id="artikel" class="section">
+      <div class="container">
+        <h2 class="section-title" data-reveal><span class="title-mark">❖</span> Artikel &amp; Materi</h2>
+        <p class="section-sub" data-reveal>Materi aqidah &amp; adab pilihan untuk memperbaiki keislaman</p>
+        <div class="artikel-grid" id="artikel-grid"></div>
+      </div>
+    </section>
+
+    <!-- ============ TENTANG ============ -->
+    <section id="tentang" class="section section-cream">
+      <div class="container">
+        <h2 class="section-title" data-reveal><span class="title-mark">❖</span> Tentang Tauhidku</h2>
+        <p class="section-sub" data-reveal>Mengapa website ini dibuat?</p>
+
+        <div class="tentang-intro" data-reveal>
+          <p>
+            <strong>Tauhidku</strong> lahir dari keprihatinan atas maraknya pemahaman yang menyimpang di tengah umat.
+            Kami ingin membantu setiap muslim kembali kepada sumber agama yang lurus:
+            <strong>Al-Qur'an</strong> dan <strong>As-Sunnah</strong> berdasarkan pemahaman <strong>Salafush Shalih</strong>.
+          </p>
+          <p>
+            Semua hadits di website ini diambil dari kitab-kitab shahih &amp; sunan yang diterjemahkan ke bahasa Indonesia
+            (sumber: <a href="https://carihadis.com" target="_blank" rel="noopener noreferrer">carihadis.com</a>),
+            dengan total lebih dari <strong>60.000 hadits</strong> yang dapat dicari.
+          </p>
+        </div>
+
+        <div class="tentang-grid">
+          <div class="tentang-card" data-reveal>
+            <div class="tentang-icon">📖</div>
+            <h3>Al-Qur'an</h3>
+            <p>Al-Qur'an adalah pedoman hidup umat Islam. Seluruh ibadah dan muamalah harus merujuk kepada firman Allah ta'ala.</p>
+          </div>
+          <div class="tentang-card" data-reveal>
+            <div class="tentang-icon">🕌</div>
+            <h3>As-Sunnah</h3>
+            <p>Hadits-hadits shahih menjelaskan dan menerapkan Al-Qur'an. Kami utamakan kitab-kitab shahih dan sunan.</p>
+          </div>
+          <div class="tentang-card" data-reveal>
+            <div class="tentang-icon">🌱</div>
+            <h3>Manhaj Salaf</h3>
+            <p>Memahami dalil dengan pemahaman para sahabat dan tabi'in — generasi terbaik yang dipuji Rasulullah ﷺ.</p>
+          </div>
+        </div>
+
+        <div class="tentang-note" data-reveal>
+          <p class="tentang-hadits">
+            <span class="q-mark">﴾</span>
+            <em>"Sebaik-baik manusia adalah generasiku, kemudian orang-orang setelah mereka, kemudian orang-orang setelah mereka."</em>
+            <span class="q-mark">﴿</span>
+          </p>
+          <p class="tentang-sumber">— HR. Bukhari &amp; Muslim, dari Abdullah bin Mas'ud</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p class="footer-bismillah" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="footer-title">Tauhid<em>ku</em></p>
+      <p class="footer-desc muted">Semoga menjadi ilmu yang bermanfaat. Bagikan kebaikan ini kepada yang lain.</p>
+      <div class="footer-links">
+        <a href="#harian">Hadits Harian</a>
+        <a href="#hadits">Cari Hadits</a>
+        <a href="#tanya">Tanya Ustadz</a>
+        <a href="#artikel">Artikel</a>
+      </div>
+      <p class="muted small">© <span id="year"></span> Tauhidku — Sumber hadits: <a href="https://carihadis.com" target="_blank" rel="noopener noreferrer">carihadis.com</a></p>
+      <p class="muted small">Website ini untuk dakwah &amp; pembelajaran. Mohon koreksi apabila ada kekeliruan. <em>Wallahu a'lam bish-shawab.</em></p>
+    </div>
+  </footer>
+
+  <!-- ============ MODAL ARTIKEL ============ -->
+  <div class="modal" id="article-modal" aria-hidden="true">
+    <div class="modal-backdrop" id="article-close"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Baca artikel">
+      <button class="modal-close" id="article-close-btn" aria-label="Tutup">✕</button>
+      <div class="modal-body" id="article-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Tombol ke atas + toast -->
+  <button id="back-to-top" aria-label="Kembali ke atas">▲</button>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div style="position:fixed;inset:0;z-index:999;background:#0e4d38;color:#e8c766;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:serif">
+      Website ini butuh JavaScript untuk menampilkan hadits &amp; pencarian. Nyalakan JavaScript-nya ya! 🙂
+    </div>
+  </noscript>
+
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/hadits.js"></script>
+  <script src="js/daily.js"></script>
+  <script src="js/ustadz.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{
+ "generated": "2026-07-31",
+ "total": 65191,
+ "kitab": [
+  {
+   "file": "shahih-bukhari.json",
+   "name": "Shahih Bukhari",
+   "count": 7008,
+   "size": 13945375
+  },
+  {
+   "file": "shahih-muslim.json",
+   "name": "Shahih Muslim",
+   "count": 5362,
+   "size": 12680765
+  },
+  {
+   "file": "sunan-tirmidzi.json",
+   "name": "Sunan Tirmidzi",
+   "count": 3891,
+   "size": 9268259
+  },
+  {
+   "file": "sunan-abu-daud.json",
+   "name": "Sunan Abu Dawud",
+   "count": 4590,
+   "size": 8799185
+  },
+  {
+   "file": "sunan-nasai.json",
+   "name": "Sunan Nasa'i",
+   "count": 5662,
+   "size": 8899785
+  },
+  {
+   "file": "sunan-ibnu-majah.json",
+   "name": "Sunan Ibnu Majah",
+   "count": 4332,
+   "size": 6376687
+  },
+  {
+   "file": "riyadhus-shalihin.json",
+   "name": "Riyadhus Shalihin",
+   "count": 372,
+   "size": 3970536
+  },
+  {
+   "file": "riyadhus-shalihin-arab.json",
+   "name": "Riyadhus Shalihin (Arab)",
+   "count": 850,
+   "size": 2032653
+  },
+  {
+   "file": "muwatho-malik.json",
+   "name": "Muwaththa' Malik",
+   "count": 1594,
+   "size": 2065827
+  },
+  {
+   "file": "musnad-syafii.json",
+   "name": "Musnad Syafi'i",
+   "count": 1800,
+   "size": 2243718
+  },
+  {
+   "file": "musnad-darimi.json",
+   "name": "Musnad Darimi",
+   "count": 3367,
+   "size": 4394870
+  },
+  {
+   "file": "musnad-ahmad.json",
+   "name": "Musnad Ahmad",
+   "count": 26363,
+   "size": 41508544
+  }
+ ]
+}

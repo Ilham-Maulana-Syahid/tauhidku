@@ -1,0 +1,14 @@
+# ============================================================================
+# TAUHIDKU — file yang TIDAK boleh masuk ke GitHub
+# ============================================================================
+
+# 🔑 KUNCI API — JANGAN PERNAH di-commit ke GitHub!
+apikey.txt
+
+# File lokal Netlify CLI
+.netlify/
+
+# Log & sementara
+*.log
+.DS_Store
+Thumbs.db

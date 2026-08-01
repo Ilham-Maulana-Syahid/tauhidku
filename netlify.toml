@@ -1,0 +1,9 @@
+# ============================================================================
+# TAUHIDKU — Konfigurasi deploy Netlify
+# ============================================================================
+# Situs ini 100% statis (HTML/CSS/JS + data JSON), jadi tidak butuh build command.
+# Kunci API Gemini disembunyikan lewat fungsi serverless di netlify/functions/.
+
+[build]
+  publish = "."                     # folder situs statis (root repo)
+  functions = "netlify/functions"   # folder fungsi serverless (proxy Gemini)
